@@ -130,6 +130,64 @@ function PresaleContent() {
 
           {/* Presale Swap Box */}
           <PresaleSwapBox />
+
+          {/* Anti-Phishing Warning */}
+          <div
+            className="w-full max-w-md rounded-xl border px-5 py-4 flex gap-3 items-start"
+            style={{
+              background: 'linear-gradient(135deg, rgba(20,10,0,0.85) 0%, rgba(40,20,0,0.9) 100%)',
+              borderColor: 'rgba(212,175,55,0.35)',
+              boxShadow: '0 0 24px rgba(212,175,55,0.08), inset 0 0 0 1px rgba(212,175,55,0.08)',
+              backdropFilter: 'blur(12px)',
+            }}
+          >
+            {/* Icon */}
+            <div className="flex-shrink-0 mt-0.5">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#d4af37"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="w-5 h-5"
+              >
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                <line x1="12" y1="9" x2="12" y2="13" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+            </div>
+
+            {/* Text */}
+            <div className="flex flex-col gap-1.5">
+              <p
+                className="text-sm font-semibold tracking-wide"
+                style={{ color: '#d4af37', fontFamily: "'Sweet Gothic Serif', serif" }}
+              >
+                Always verify you are on the official website
+              </p>
+              <p className="text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                Scammers create fake sites that look identical to ours. Before interacting with your
+                wallet, confirm the URL in your browser matches exactly:
+              </p>
+              <div
+                className="mt-1 rounded-md px-3 py-2 text-xs font-mono tracking-wide select-all"
+                style={{
+                  background: 'rgba(212,175,55,0.08)',
+                  border: '1px solid rgba(212,175,55,0.25)',
+                  color: '#f0e68c',
+                  letterSpacing: '0.03em',
+                }}
+              >
+                https://xora.mintora.io/presale
+              </div>
+              <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.45)' }}>
+                We will <span style={{ color: '#d4af37' }}>never</span> ask for your seed phrase or
+                private key. If in doubt, do not proceed.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
       <Footer />

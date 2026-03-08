@@ -31,7 +31,7 @@ export function WalletConnectButton() {
           onClick={() => setShowDisconnect(!showDisconnect)}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          className="relative px-6 py-3 sm:px-8 sm:py-4 text-sm sm:text-base font-bold rounded-lg transition-all duration-300 flex items-center gap-2"
+          className="relative px-3 py-2 sm:px-6 sm:py-3 text-sm sm:text-base font-bold rounded-lg transition-all duration-300 flex items-center gap-2"
           style={{
             fontFamily: "'Sweet Gothic Serif', serif",
             backgroundColor: isHovered ? '#f0e68c' : '#d4af37',
@@ -45,7 +45,7 @@ export function WalletConnectButton() {
           title="Click to disconnect or change wallet"
         >
           <Wallet size={20} />
-          <span>{formatAddress(connectedAddress)}</span>
+          <span className="hidden sm:inline">{formatAddress(connectedAddress)}</span>
         </button>
 
         {/* Disconnect Menu */}
@@ -92,7 +92,7 @@ export function WalletConnectButton() {
       onClick={handleConnect}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="relative px-6 py-3 sm:px-8 sm:py-4 text-sm sm:text-base font-bold rounded-lg transition-all duration-300 flex items-center gap-2"
+      className="relative px-3 py-2 sm:px-6 sm:py-3 text-sm sm:text-base font-bold rounded-lg transition-all duration-300 flex items-center gap-2"
       style={{
         fontFamily: "'Sweet Gothic Serif', serif",
         backgroundColor: isHovered ? '#f0e68c' : '#d4af37',
@@ -106,7 +106,7 @@ export function WalletConnectButton() {
       title="Click to connect wallet"
     >
       <Wallet size={20} />
-      <span>Connect Wallet</span>
+      <span className="hidden sm:inline">Connect Wallet</span>
     </button>
   );
 }
