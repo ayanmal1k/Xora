@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getTokenData, calculatePercentageSold } from '@/lib/firestore-service';
 
+const PRESALE_START = new Date('2026-03-10T00:00:00Z');
+const PRESALE_END = new Date('2026-05-10T23:59:59Z');
+
 export function PresaleSection() {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
@@ -16,6 +19,7 @@ export function PresaleSection() {
   const [soldTokens, setSoldTokens] = useState(252000000);
   const [presaleSupply, setPresaleSupply] = useState(560000000);
   const [loading, setLoading] = useState(true);
+  const [presaleStatus, setPresaleStatus] = useState<'notStarted' | 'active' | 'ended'>('notStarted');
 
   // Fetch token data from Firestore
   useEffect(() => {
@@ -40,14 +44,20 @@ export function PresaleSection() {
   // Countdown timer code
   useEffect(() => {
     const calculateTimeLeft = () => {
-      // Set presale end date to March 12, 2026 at TC+1 (UTC+1)
-      // Create a date in UTC+1 timezone
-      const presaleEndDate = new Date('2026-03-12T23:59:59+01:00');
-
       const now = new Date();
-      const difference = presaleEndDate.getTime() - now.getTime();
 
-      if (difference > 0) {
+      if (now < PRESALE_START) {
+        setPresaleStatus('notStarted');
+        const difference = PRESALE_START.getTime() - now.getTime();
+        setTimeLeft({
+          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+          minutes: Math.floor((difference / 1000 / 60) % 60),
+          seconds: Math.floor((difference / 1000) % 60),
+        });
+      } else if (now <= PRESALE_END) {
+        setPresaleStatus('active');
+        const difference = PRESALE_END.getTime() - now.getTime();
         setTimeLeft({
           days: Math.floor(difference / (1000 * 60 * 60 * 24)),
           hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
@@ -55,13 +65,8 @@ export function PresaleSection() {
           seconds: Math.floor((difference / 1000) % 60),
         });
       } else {
-        // Presale ended
-        setTimeLeft({
-          days: 0,
-          hours: 0,
-          minutes: 0,
-          seconds: 0,
-        });
+        setPresaleStatus('ended');
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
       }
     };
 
@@ -97,7 +102,11 @@ export function PresaleSection() {
               fontFamily: "'Georgia', 'Garamond', serif",
             }}
           >
-            Limited time offer - Join early supporters of XORA
+            {presaleStatus === 'ended'
+              ? 'The XORA presale has officially ended. Thank you to all participants.'
+              : presaleStatus === 'notStarted'
+              ? 'The presale opens on March 10, 2026. Get ready to secure your XORA tokens!'
+              : 'Limited time offer - Join early supporters of XORA'}
           </p>
         </div>
 
@@ -133,7 +142,7 @@ export function PresaleSection() {
                   fontFamily: "'Sweet Gothic Serif', serif",
                 }}
               >
-                Presale Ends In
+                {presaleStatus === 'notStarted' ? 'Presale Starts In' : presaleStatus === 'ended' ? 'Presale Has Ended' : 'Presale Ends In'}
               </p>
 
               <div className="grid grid-cols-4 gap-3 sm:gap-4">
@@ -313,30 +322,60 @@ export function PresaleSection() {
             </div>
 
             {/* Call to Action Button */}
-            <Link href="/presale" className="block">
-              <button
-                className="w-full px-8 py-4 sm:py-5 text-base sm:text-lg font-bold rounded-lg transition-all duration-300 hover:scale-105"
+            {presaleStatus === 'active' && (
+              <Link href="/presale" className="block">
+                <button
+                  className="w-full px-8 py-4 sm:py-5 text-base sm:text-lg font-bold rounded-lg transition-all duration-300 hover:scale-105"
+                  style={{
+                    fontFamily: "'Sweet Gothic Serif', serif",
+                    backgroundColor: '#d4af37',
+                    color: '#000000',
+                    letterSpacing: '0.05em',
+                    boxShadow: '0 0 20px rgba(212, 175, 55, 0.3)',
+                  }}
+                  onMouseEnter={(e) => {
+                    const element = e.currentTarget as HTMLElement;
+                    element.style.backgroundColor = '#f0e68c';
+                    element.style.boxShadow = '0 0 40px rgba(212, 175, 55, 0.8)';
+                  }}
+                  onMouseLeave={(e) => {
+                    const element = e.currentTarget as HTMLElement;
+                    element.style.backgroundColor = '#d4af37';
+                    element.style.boxShadow = '0 0 20px rgba(212, 175, 55, 0.3)';
+                  }}
+                >
+                  Join Presale Now
+                </button>
+              </Link>
+            )}
+            {presaleStatus === 'notStarted' && (
+              <div
+                className="w-full px-8 py-4 sm:py-5 text-base sm:text-lg font-bold rounded-lg text-center"
                 style={{
                   fontFamily: "'Sweet Gothic Serif', serif",
-                  backgroundColor: '#d4af37',
-                  color: '#000000',
+                  background: 'rgba(212,175,55,0.07)',
+                  border: '1px solid rgba(212,175,55,0.25)',
+                  color: 'rgba(212,175,55,0.65)',
                   letterSpacing: '0.05em',
-                  boxShadow: '0 0 20px rgba(212, 175, 55, 0.3)',
-                }}
-                onMouseEnter={(e) => {
-                  const element = e.currentTarget as HTMLElement;
-                  element.style.backgroundColor = '#f0e68c';
-                  element.style.boxShadow = '0 0 40px rgba(212, 175, 55, 0.8)';
-                }}
-                onMouseLeave={(e) => {
-                  const element = e.currentTarget as HTMLElement;
-                  element.style.backgroundColor = '#d4af37';
-                  element.style.boxShadow = '0 0 20px rgba(212, 175, 55, 0.3)';
                 }}
               >
-                Join Presale Now
-              </button>
-            </Link>
+                Presale Opens March 10, 2026
+              </div>
+            )}
+            {presaleStatus === 'ended' && (
+              <div
+                className="w-full px-8 py-4 sm:py-5 text-base sm:text-lg font-bold rounded-lg text-center"
+                style={{
+                  fontFamily: "'Sweet Gothic Serif', serif",
+                  background: 'rgba(180,60,60,0.08)',
+                  border: '1px solid rgba(180,60,60,0.3)',
+                  color: 'rgba(255,120,120,0.9)',
+                  letterSpacing: '0.05em',
+                }}
+              >
+                Presale Has Ended
+              </div>
+            )}
           </div>
         </div>
       </div>
