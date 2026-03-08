@@ -1,0 +1,112 @@
+'use client';
+
+import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
+import { Wallet, LogOut } from 'lucide-react';
+import { useState } from 'react';
+
+export function WalletConnectButton() {
+  const { user, setShowAuthFlow, primaryWallet, handleLogOut } = useDynamicContext();
+  const [isHovered, setIsHovered] = useState(false);
+  const [showDisconnect, setShowDisconnect] = useState(false);
+
+  const handleConnect = () => {
+    setShowAuthFlow(true);
+  };
+
+  const handleDisconnect = () => {
+    handleLogOut();
+    setShowDisconnect(false);
+  };
+
+  const formatAddress = (address: string) => {
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  };
+
+  const connectedAddress = primaryWallet?.address;
+
+  if (connectedAddress) {
+    return (
+      <div className="relative">
+        <button
+          onClick={() => setShowDisconnect(!showDisconnect)}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          className="relative px-6 py-3 sm:px-8 sm:py-4 text-sm sm:text-base font-bold rounded-lg transition-all duration-300 flex items-center gap-2"
+          style={{
+            fontFamily: "'Sweet Gothic Serif', serif",
+            backgroundColor: isHovered ? '#f0e68c' : '#d4af37',
+            color: '#000000',
+            letterSpacing: '0.05em',
+            boxShadow: isHovered 
+              ? '0 0 30px rgba(212, 175, 55, 0.8)' 
+              : '0 0 15px rgba(212, 175, 55, 0.3)',
+            transform: isHovered ? 'scale(1.05)' : 'scale(1)',
+          }}
+          title="Click to disconnect or change wallet"
+        >
+          <Wallet size={20} />
+          <span>{formatAddress(connectedAddress)}</span>
+        </button>
+
+        {/* Disconnect Menu */}
+        {showDisconnect && (
+          <div 
+            className="absolute top-full right-0 mt-2 w-48 rounded-lg overflow-hidden shadow-2xl z-50"
+            style={{
+              backgroundColor: '#1a1a1a',
+              border: '1px solid #d4af37',
+              boxShadow: '0 0 20px rgba(212, 175, 55, 0.3)',
+            }}
+          >
+            {/* Change Wallet */}
+            
+
+            {/* Disconnect */}
+            <button
+              onClick={handleDisconnect}
+              className="w-full px-4 py-3 text-left text-red-400 hover:bg-red-600/20 transition-colors flex items-center gap-2 border-t border-yellow-600/20"
+              style={{
+                fontFamily: "'Sweet Gothic Serif', serif",
+              }}
+            >
+              <LogOut size={18} />
+              <span>Disconnect</span>
+            </button>
+          </div>
+        )}
+
+        {/* Overlay to close menu when clicking outside */}
+        {showDisconnect && (
+          <div 
+            className="fixed inset-0 z-40"
+            onClick={() => setShowDisconnect(false)}
+          />
+        )}
+      </div>
+    );
+  }
+
+  // Not connected - show Connect button
+  return (
+    <button
+      onClick={handleConnect}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="relative px-6 py-3 sm:px-8 sm:py-4 text-sm sm:text-base font-bold rounded-lg transition-all duration-300 flex items-center gap-2"
+      style={{
+        fontFamily: "'Sweet Gothic Serif', serif",
+        backgroundColor: isHovered ? '#f0e68c' : '#d4af37',
+        color: '#000000',
+        letterSpacing: '0.05em',
+        boxShadow: isHovered 
+          ? '0 0 30px rgba(212, 175, 55, 0.8)' 
+          : '0 0 15px rgba(212, 175, 55, 0.3)',
+        transform: isHovered ? 'scale(1.05)' : 'scale(1)',
+      }}
+      title="Click to connect wallet"
+    >
+      <Wallet size={20} />
+      <span>Connect Wallet</span>
+    </button>
+  );
+}
