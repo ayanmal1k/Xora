@@ -17,7 +17,7 @@ export function SocialSection() {
       name: 'Telegram',
       description: 'Join our community on Telegram for real-time conversations and support.',
       icon: '/Images/telegram.png',
-      link: 'https://t.me',
+      link: 'https://t.me/MintoraXora',
       bgGradient: 'from-gray-900 to-black',
       hoverColor: '#d4af37',
     },
