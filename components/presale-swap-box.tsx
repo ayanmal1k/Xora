@@ -7,6 +7,8 @@ import { XORA_PRICE_USD } from '@/lib/contracts';
 import { ethers } from 'ethers';
 
 const TREASURY_WALLET = process.env.NEXT_PUBLIC_TREASURY_WALLET_ADDRESS || '';
+const MIN_USD = 20;
+const MAX_USD = 10000;
 
 export function PresaleSwapBox() {
   const { primaryWallet } = useDynamicContext();
@@ -57,6 +59,19 @@ export function PresaleSwapBox() {
     return () => clearInterval(interval);
   }, []);
 
+  const usdValue = inputAmount && !isNaN(parseFloat(inputAmount))
+    ? parseFloat(inputAmount) * prices[selectedCurrency]
+    : 0;
+
+  const getLimitError = () => {
+    if (!inputAmount || parseFloat(inputAmount) <= 0) return null;
+    if (usdValue < MIN_USD) return `Minimum purchase is $${MIN_USD} USD`;
+    if (usdValue > MAX_USD) return `Maximum purchase is $${MAX_USD.toLocaleString()} USD`;
+    return null;
+  };
+
+  const limitError = getLimitError();
+
   const calculateXORA = () => {
     if (!inputAmount || isNaN(parseFloat(inputAmount))) return 0;
     const usdValue = parseFloat(inputAmount) * prices[selectedCurrency];
@@ -85,6 +100,16 @@ export function PresaleSwapBox() {
   const handleSwap = async () => {
     if (!connectedAddress || !inputAmount || parseFloat(inputAmount) <= 0) {
       setError('Please enter a valid amount');
+      return;
+    }
+
+    const enteredUsd = parseFloat(inputAmount) * prices[selectedCurrency];
+    if (enteredUsd < MIN_USD) {
+      setError(`Minimum purchase is $${MIN_USD} USD.`);
+      return;
+    }
+    if (enteredUsd > MAX_USD) {
+      setError(`Maximum purchase is $${MAX_USD.toLocaleString()} USD.`);
       return;
     }
 
@@ -495,7 +520,19 @@ export function PresaleSwapBox() {
                   </button>
                 </div>
               </div>
-              <div className="text-xs text-gray-400 text-right" style={{ fontFamily: "'Georgia', 'Garamond', serif" }}>
+              {/* Limit hint / inline error */}
+              <div className="flex items-center justify-between text-xs mt-2" style={{ fontFamily: "'Georgia', 'Garamond', serif" }}>
+                <span style={{ color: limitError ? '#f87171' : 'rgba(255,255,255,0.35)' }}>
+                  {limitError
+                    ? limitError
+                    : `Min $${MIN_USD} · Max $${MAX_USD.toLocaleString()} USD`}
+                </span>
+                {inputAmount && !limitError && usdValue > 0 && (
+                  <span style={{ color: 'rgba(212,175,55,0.7)' }}>≈ ${usdValue.toFixed(2)} USD</span>
+                )}
+              </div>
+
+              <div className="text-xs text-gray-400 text-right mt-1" style={{ fontFamily: "'Georgia', 'Garamond', serif" }}>
                 {loading ? (
                   <span className="flex items-center justify-end gap-1">
                     <Loader size={12} className="animate-spin" />
@@ -550,7 +587,7 @@ export function PresaleSwapBox() {
             {/* Purchase Button */}
             <button
               onClick={handleSwap}
-              disabled={!inputAmount || parseFloat(inputAmount) <= 0 || txLoading}
+              disabled={!inputAmount || parseFloat(inputAmount) <= 0 || !!limitError || txLoading}
               className="w-full py-2 sm:py-3 px-4 rounded-lg font-bold text-sm sm:text-base transition-all duration-300 disabled:opacity-50"
               style={{
                 fontFamily: "'Sweet Gothic Serif', serif",
